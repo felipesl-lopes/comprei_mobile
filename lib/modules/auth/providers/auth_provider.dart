@@ -72,6 +72,7 @@ class AuthProvider with ChangeNotifier {
     _expiryDate = null;
     await _prefs.deleteKeepLogged();
     await _storage.deleteCredentials();
+    await _storage.deleteRefreshToken();
     _clearLogoutTimer();
     notifyListeners();
   }
