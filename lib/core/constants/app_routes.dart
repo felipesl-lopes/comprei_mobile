@@ -7,6 +7,7 @@ import 'package:appshop/modules/compras/pages/compras_page.dart';
 import 'package:appshop/modules/compras/pages/detalhes_da_compra_page.dart';
 import 'package:appshop/modules/compras/pages/finalizar_compra_page.dart';
 import 'package:appshop/modules/compras/pages/selecionar_endereco_page.dart';
+import 'package:appshop/modules/endereco/pages/gerenciar_enderecos_page.dart';
 import 'package:appshop/modules/endereco/pages/novo_endereco_page.dart';
 import 'package:appshop/modules/home/pages/home_page.dart';
 import 'package:appshop/modules/manage_products/pages/manage_product_form_page.dart';
@@ -36,6 +37,7 @@ class AppRoutes {
   static const NOVO_ENDERECO = '/new';
   static const AVALIACAO_PRODUTO = '/avaliacao_produto';
   static const LISTA_AVALIACOES = '/lista_avaliacoes';
+  static const GERENCIAR_ENDERECO = '/gerenciar_endereco';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     Widget page;
@@ -107,6 +109,10 @@ class AppRoutes {
 
       case LISTA_AVALIACOES:
         page = ListaAvaliacoesPage();
+        break;
+
+      case GERENCIAR_ENDERECO:
+        page = GerenciarEnderecosPage();
         break;
 
       default:

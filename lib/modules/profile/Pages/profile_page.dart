@@ -20,6 +20,11 @@ class ProfilePage extends StatelessWidget {
         () => Navigator.of(context).pushNamed(AppRoutes.PROFILE_USER_DATA),
       ),
       (
+        Icons.home_outlined,
+        "Gerenciar endereços",
+        () => Navigator.of(context).pushNamed(AppRoutes.GERENCIAR_ENDERECO),
+      ),
+      (
         Icons.security_outlined,
         "Segurança e conta",
         () => Navigator.of(context).pushNamed(AppRoutes.PROFILE_USER_DATA),

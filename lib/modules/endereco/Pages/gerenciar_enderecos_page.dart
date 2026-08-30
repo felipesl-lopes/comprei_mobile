@@ -1,20 +1,19 @@
 import 'package:appshop/core/constants/app_routes.dart';
 import 'package:appshop/core/widgets/back_app_bar.dart';
 import 'package:appshop/core/widgets/feedback_message.dart';
-import 'package:appshop/core/widgets/send_button.dart';
 import 'package:appshop/modules/endereco/providers/endereco_provider.dart';
 import 'package:appshop/modules/endereco/widgets/endereco_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SelecionarEnderecoPage extends StatefulWidget {
-  const SelecionarEnderecoPage({super.key});
+class GerenciarEnderecosPage extends StatefulWidget {
+  const GerenciarEnderecosPage({super.key});
 
   @override
-  State<SelecionarEnderecoPage> createState() => _SelecionarEnderecoPageState();
+  State<GerenciarEnderecosPage> createState() => _GerenciarEnderecosPageState();
 }
 
-class _SelecionarEnderecoPageState extends State<SelecionarEnderecoPage> {
+class _GerenciarEnderecosPageState extends State<GerenciarEnderecosPage> {
   String? _selectedEnderecoId;
 
   @override
@@ -30,7 +29,7 @@ class _SelecionarEnderecoPageState extends State<SelecionarEnderecoPage> {
     final enderecos = enderecoProvider.enderecos;
 
     return Scaffold(
-      appBar: BackAppBar(title: 'Selecionar endereço'),
+      appBar: BackAppBar(title: 'Gerenciar endereço'),
       body: ListenableBuilder(
         listenable: enderecoProvider.loadAddressCommand,
         builder: (context, _) {
@@ -55,7 +54,7 @@ class _SelecionarEnderecoPageState extends State<SelecionarEnderecoPage> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Selecione o endereço da entrega.',
+                  'Adicione, edite ou remova seus endereços.',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -87,36 +86,6 @@ class _SelecionarEnderecoPageState extends State<SelecionarEnderecoPage> {
             ],
           );
         },
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Row(
-            children: [
-              Expanded(
-                child: SendButton(
-                  'Voltar',
-                  () => Navigator.of(context).pop(),
-                  secondaryButton: true,
-                ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: SendButton(
-                  'Continuar',
-                  _selectedEnderecoId == null
-                      ? null
-                      : () {
-                          Navigator.of(context).pushNamed(
-                            AppRoutes.FINALIZE_PURCHASE,
-                            arguments: _selectedEnderecoId,
-                          );
-                        },
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
