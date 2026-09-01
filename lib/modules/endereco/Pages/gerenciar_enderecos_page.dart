@@ -17,13 +17,6 @@ class _GerenciarEnderecosPageState extends State<GerenciarEnderecosPage> {
   String? _selectedEnderecoId;
 
   @override
-  void initState() {
-    super.initState();
-
-    context.read<EnderecoProvider>().loadAddressCommand.execute();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final enderecoProvider = context.watch<EnderecoProvider>();
     final enderecos = enderecoProvider.enderecos;
