@@ -10,6 +10,7 @@ import 'package:appshop/modules/categorias/providers/categorias_provider.dart';
 import 'package:appshop/modules/categorias/repositories/categorias_repository.dart';
 import 'package:appshop/modules/compras/providers/order_list_provider.dart';
 import 'package:appshop/modules/compras/repositories/order_repository.dart';
+import 'package:appshop/modules/endereco/dataSource/endereco_local_data_source.dart';
 import 'package:appshop/modules/endereco/providers/endereco_provider.dart';
 import 'package:appshop/modules/endereco/repositories/endereco_repository.dart';
 import 'package:appshop/modules/home/providers/banners_provider.dart';
@@ -50,7 +51,10 @@ void configureDependencies() {
     () => OrderRepository(getIt<IHttpClient>()),
   );
   getIt.registerLazySingleton<EnderecoRepository>(
-    () => EnderecoRepository(getIt<IHttpClient>()),
+    () => EnderecoRepository(
+      getIt<IHttpClient>(),
+      getIt<EnderecoLocalDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<AvaliacaoRepository>(
     () => AvaliacaoRepository(getIt<IHttpClient>()),
@@ -86,4 +90,8 @@ void configureDependencies() {
   getIt.registerLazySingleton<EnderecoProvider>(() => EnderecoProvider(
         getIt<EnderecoRepository>(),
       ));
+
+  getIt.registerLazySingleton<EnderecoLocalDataSource>(
+    () => EnderecoLocalDataSource(),
+  );
 }

@@ -1,13 +1,15 @@
 import 'dart:io';
 
 import 'package:appshop/core/services/i_http_client.dart';
+import 'package:appshop/modules/endereco/dataSource/endereco_local_data_source.dart';
 import 'package:appshop/modules/endereco/models/endereco_model.dart';
 import 'package:flutter/material.dart';
 
 class EnderecoRepository {
   final IHttpClient _client;
+  final EnderecoLocalDataSource _localDataSource;
 
-  EnderecoRepository(this._client);
+  EnderecoRepository(this._client, this._localDataSource);
 
   Future<List<EnderecoModel>> carregarEnderecos() async {
     debugPrint('[CartRepository]: carregarEnderecos');
@@ -26,6 +28,11 @@ class EnderecoRepository {
       final enderecos = (data as List)
           .map((e) => EnderecoModel.fromMap(Map<String, dynamic>.from(e)))
           .toList();
+
+      // Salvar no SQLite
+      for (final endereco in enderecos) {
+        await _localDataSource.inserirEndereco(endereco);
+      }
 
       return enderecos;
     } catch (e) {

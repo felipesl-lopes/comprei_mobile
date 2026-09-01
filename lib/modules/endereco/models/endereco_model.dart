@@ -55,6 +55,20 @@ class EnderecoModel {
     };
   }
 
+  // Para toMap no SQLite
+  Map<String, dynamic> toDatabaseMap() {
+    return <String, dynamic>{
+      'id': id,
+      'cep': cep,
+      'rua': rua,
+      'numero': numero,
+      'complemento': complemento,
+      'bairro': bairro,
+      'cidade': cidade,
+      'uf': uf,
+    };
+  }
+
   factory EnderecoModel.fromMap(Map<String, dynamic> map) {
     return EnderecoModel(
       id: map['id'] as String?,
