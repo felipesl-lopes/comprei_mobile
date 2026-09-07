@@ -3,6 +3,14 @@ import 'package:appshop/modules/endereco/models/endereco_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class EnderecoLocalDataSource {
+  Future<List<EnderecoModel>> carregarEnderecos() async {
+    final db = await AppDatabase.database;
+
+    final result = await db.query('enderecos');
+
+    return result.map((e) => EnderecoModel.fromMap(e)).toList();
+  }
+
   Future<void> inserirEndereco(EnderecoModel endereco) async {
     final db = await AppDatabase.database;
 

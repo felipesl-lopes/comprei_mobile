@@ -31,12 +31,26 @@ class EnderecoProvider with ChangeNotifier {
   }
 
   Future<Result<List<EnderecoModel>>> _loadAddress() async {
+    // TODO: esse fluxo não é necessário pois os endereços não são carregados na tela inicial,
+    // com isso não necessita de um carregamento rápido.
+
     try {
-      final response = await _enderecoRepository.carregarEnderecos();
+      // 1. carrega imediatamente do SQLite
+      final enderecosLocais =
+          await _enderecoRepository.carregarEnderecosLocais();
 
-      setEnderecos(response);
+      if (enderecosLocais.isNotEmpty) {
+        setEnderecos(enderecosLocais);
+      }
 
-      return Success(response);
+      // 2. depois busca os dados atualizados da API
+      final enderecosAtualizados =
+          await _enderecoRepository.carregarEnderecos();
+
+      // 3. atualiza a tela com os dados da API
+      setEnderecos(enderecosAtualizados);
+
+      return Success(enderecosAtualizados);
     } catch (_) {
       rethrow;
     }

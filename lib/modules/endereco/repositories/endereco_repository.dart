@@ -11,12 +11,16 @@ class EnderecoRepository {
 
   EnderecoRepository(this._client, this._localDataSource);
 
+  Future<List<EnderecoModel>> carregarEnderecosLocais() async {
+    return await _localDataSource.carregarEnderecos();
+  }
+
   Future<List<EnderecoModel>> carregarEnderecos() async {
     debugPrint('[CartRepository]: carregarEnderecos');
 
     try {
       final response = await _client.get('address');
-      
+
       final data = response.data;
 
       if (response.statusCode >= 400) {
@@ -28,6 +32,8 @@ class EnderecoRepository {
       final enderecos = (data as List)
           .map((e) => EnderecoModel.fromMap(Map<String, dynamic>.from(e)))
           .toList();
+
+      await _localDataSource.limparEnderecos();
 
       // Salvar no SQLite
       for (final endereco in enderecos) {
