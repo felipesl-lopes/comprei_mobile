@@ -53,7 +53,6 @@ void configureDependencies() {
   getIt.registerLazySingleton<EnderecoRepository>(
     () => EnderecoRepository(
       getIt<IHttpClient>(),
-      getIt<EnderecoLocalDataSource>(),
     ),
   );
   getIt.registerLazySingleton<AvaliacaoRepository>(
