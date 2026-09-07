@@ -42,14 +42,14 @@ class ProductGrid extends StatelessWidget {
           if (gridHorizontal == true) ...[
             // GRID HORIZONTAL
             SizedBox(
-              height: 306,
+              height: 290,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.all(8),
                 itemCount: _itensCount,
-                separatorBuilder: (_, __) => SizedBox(width: 12),
+                separatorBuilder: (_, __) => SizedBox(width: 8),
                 itemBuilder: (ctx, index) => SizedBox(
-                  width: 180,
+                  width: 168,
                   child: ProductGridItem(
                     product: list_products[index],
                   ),
