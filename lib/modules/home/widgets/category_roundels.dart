@@ -35,7 +35,7 @@ class CategoryRoundels extends StatelessWidget {
               final categoria = categorias[index];
 
               return Container(
-                margin: EdgeInsets.symmetric(horizontal: 4),
+                margin: EdgeInsets.symmetric(horizontal: 8),
                 child: InkWell(
                   onTap: () => onCategorySelected(categoria.id),
                   child: Column(
