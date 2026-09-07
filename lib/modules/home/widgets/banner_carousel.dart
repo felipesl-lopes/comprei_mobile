@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:appshop/core/widgets/image_fallback_icon.dart';
 import 'package:appshop/modules/home/models/banner_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BannerCarousel extends StatefulWidget {
@@ -71,10 +72,10 @@ class _BannerCarouselState extends State<BannerCarousel> {
             itemBuilder: (context, index) {
               final banner = banners[index % banners.length];
 
-              return Image.network(
-                banner.imageUrl,
+              return CachedNetworkImage(
+                imageUrl: banner.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
+                errorWidget: (context, url, error) {
                   return Image.asset(
                     'assets/images/banner-padrao.png',
                     fit: BoxFit.cover,
