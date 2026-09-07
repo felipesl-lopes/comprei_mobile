@@ -135,11 +135,12 @@ class _SearchPageState extends State<SearchPage> {
           onSubmitted: (_) => FocusScope.of(context).unfocus(),
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
+            isDense: true,
             fillColor: colorScheme.onPrimary,
             filled: true,
             hintText: "Buscar produto",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-            contentPadding: EdgeInsets.symmetric(horizontal: 8),
+            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
               borderSide: BorderSide.none,
@@ -148,9 +149,18 @@ class _SearchPageState extends State<SearchPage> {
               borderRadius: BorderRadius.circular(4),
               borderSide: BorderSide.none,
             ),
+            suffixIconConstraints: const BoxConstraints(
+              minWidth: 40,
+              minHeight: 40,
+            ),
             suffixIcon: IconButton(
+              style: IconButton.styleFrom(
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
               onPressed: _searchProduct,
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.search, size: 20),
             ),
           ),
         ),

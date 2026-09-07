@@ -99,6 +99,7 @@ class _HomePageState extends State<HomePage> {
           onSubmitted: (_) => FocusScope.of(context).unfocus(),
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
+            isDense: true,
             fillColor: Theme.of(context).colorScheme.surface,
             filled: true,
             hintText: "Buscar produto",
@@ -108,7 +109,7 @@ class _HomePageState extends State<HomePage> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 8),
+            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
               borderSide: BorderSide.none,
@@ -117,9 +118,18 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(4),
               borderSide: BorderSide.none,
             ),
+            suffixIconConstraints: const BoxConstraints(
+              minWidth: 40,
+              minHeight: 40,
+            ),
             suffixIcon: IconButton(
+              style: IconButton.styleFrom(
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
               onPressed: _searchProduct,
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.search, size: 20),
             ),
           ),
         ),
@@ -166,7 +176,8 @@ class _HomePageState extends State<HomePage> {
                       if (produtosProvider
                           .loadFavoritesProductsCommand.value.isFailure)
                         FeedbackMessage(
-                          message: "Não foi possível carregar seus produtos favoritos.",
+                          message:
+                              "Não foi possível carregar seus produtos favoritos.",
                           icon: Icons.error_outline,
                           iconColor: Theme.of(context).colorScheme.error,
                         ),
