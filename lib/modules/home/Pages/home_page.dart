@@ -34,11 +34,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialData() async {
+    final productProvider = context.read<ProductProvider>();
+
     await Future.wait([
+      productProvider.loadProductsCommand.execute(),
+      productProvider.loadResearchedProductsCommand.execute(),
       context.read<CategoriasProvider>().loadCategoriesCommand.execute(),
       context.read<BannersProvider>().loadBannersCommand.execute(),
       context.read<CartProvider>().loadCartCommand.execute(),
-      context.read<ProductProvider>().loadProductsCommand.execute(),
       context.read<ProductProvider>().loadMyProductsCommand.execute(),
       context.read<ProductProvider>().loadFavoritesProductsCommand.execute(),
       context.read<EnderecoProvider>().loadAddressCommand.execute(),
@@ -190,6 +193,14 @@ class _HomePageState extends State<HomePage> {
                         ),
                       if (produtosProvider.loadProductsCommand.value.isSuccess)
                         CardIncentivoCarrinho(),
+                      if (produtosProvider
+                          .loadResearchedProductsCommand.value.isSuccess)
+                        ProductGrid(
+                          list_products: produtosProvider.produtosVisualizados,
+                          quantityGrid: 5,
+                          title: "Últimos vistos",
+                          gridHorizontal: true,
+                        ),
                       if (produtosProvider.loadProductsCommand.value.isFailure)
                         FeedbackMessage(
                           message: "Não foi possível carregar os produtos.",

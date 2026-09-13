@@ -1,3 +1,4 @@
+import 'package:appshop/core/database/dataSource/product_local_data_source.dart';
 import 'package:appshop/core/errors/generic_exception.dart';
 import 'package:appshop/core/services/i_http_client.dart';
 import 'package:appshop/modules/product/models/product_model.dart';
@@ -5,8 +6,9 @@ import 'package:flutter/material.dart';
 
 class ProductRepository {
   final IHttpClient _client;
+  final ProductLocalDataSource _localDataSource;
 
-  ProductRepository(this._client);
+  ProductRepository(this._client, this._localDataSource);
 
   Future<List<ProductModel>> carregarProdutos() async {
     debugPrint('[ProductRepository]: carregarProdutos');
@@ -165,6 +167,49 @@ class ProductRepository {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Erro ao adicionar/remover favorito');
+    }
+  }
+
+  Future<void> guardarProdutoPesquisado({
+    required String productId,
+    required int timestamp,
+  }) async {
+    debugPrint('[ProductRepository]: guardarProdutoPesquisado');
+
+    try {
+      await _localDataSource.inserirProdutoPesquisado(productId, timestamp);
+    } catch (e) {
+      debugPrint('Erro ao salvar produto pesquisado: $e');
+    }
+  }
+
+  Future<List<ProductModel>> getProdutosPesquisados() async {
+    debugPrint('[ProductRepository]: setProdutoPesquisado');
+
+    try {
+      final produtos = await _localDataSource.carregarProdutosPesquisados();
+
+      final ids = produtos.map((produto) => produto['id'] as String).join(',');
+
+      if (produtos.isEmpty) {
+        return [];
+      }
+
+      final result = await _client.get(
+        'products/researched',
+        queryParameters: {'ids': ids},
+      );
+
+      if (result.statusCode >= 400) {
+        return [];
+      }
+
+      final productList =
+          (result.data as List).map((e) => ProductModel.fromMap(e)).toList();
+
+      return productList;
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -69,6 +69,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        final product = widget.product ?? _productFromRouteOrProvider(context);
+
+        if (product?.id != null) {
+          context.read<ProductProvider>().guardarProdutoPesquisado(
+                product!.id!,
+              );
+        }
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 

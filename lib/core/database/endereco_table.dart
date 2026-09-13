@@ -1,4 +1,4 @@
-class AddressTable {
+class EnderecoTable {
   static const String tableName = 'enderecos';
 
   static const String createTable = '''

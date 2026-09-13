@@ -1,4 +1,5 @@
-import 'package:appshop/core/database/tables.dart';
+import 'package:appshop/core/database/endereco_table.dart';
+import 'package:appshop/core/database/produto_table.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -20,12 +21,16 @@ class AppDatabase {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
-        await db.execute(AddressTable.createTable);
+        await db.execute(EnderecoTable.createTable);
+        await db.execute(ProdutoTable.createTable);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(ProdutoTable.createTable);
+        }
       },
     );
   }
 }
-
-

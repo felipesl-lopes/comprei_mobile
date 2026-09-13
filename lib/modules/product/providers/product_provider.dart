@@ -11,10 +11,12 @@ class ProductProvider with ChangeNotifier {
   late final Command0<List<ProductModel>> loadProductsCommand;
   late final Command0<List<ProductModel>> loadMyProductsCommand;
   late final Command0<List<ProductModel>> loadFavoritesProductsCommand;
+  late final Command0<List<ProductModel>> loadResearchedProductsCommand;
 
   List<ProductModel> _produtos = [];
   List<ProductModel> _meusProdutos = [];
   List<ProductModel> _produtosFavoritos = [];
+  List<ProductModel> _produtosVisualizados = [];
 
   ProductProvider(
     this._productRepository,
@@ -22,17 +24,16 @@ class ProductProvider with ChangeNotifier {
     loadProductsCommand = Command0(_loadProducts);
     loadMyProductsCommand = Command0(_loadMyProducts);
     loadFavoritesProductsCommand = Command0(_loadFavoritesProducts);
+    loadResearchedProductsCommand = Command0(_loadResearchedProducts);
   }
 
   List<ProductModel> get produtos => [..._produtos];
   List<ProductModel> get meusProdutos => [..._meusProdutos];
   List<ProductModel> get produtosFavoritos => [..._produtosFavoritos];
+  List<ProductModel> get produtosVisualizados => [..._produtosVisualizados];
 
   List<ProductModel> get produtosEmOferta =>
       _produtos.where((p) => p.isPromotional).toList();
-
-  List<ProductModel> get meusFavoritos =>
-      _produtos.where((p) => p.isFavorite == true).toList();
 
   int get quantidadeDeProdutos {
     return _produtos.length;
@@ -50,6 +51,11 @@ class ProductProvider with ChangeNotifier {
 
   void setProdutosFavoritos(List<ProductModel> value) {
     _produtosFavoritos = value;
+    notifyListeners();
+  }
+
+  void setProdutosVisualizados(List<ProductModel> value) {
+    _produtosVisualizados = value;
     notifyListeners();
   }
 
@@ -253,5 +259,24 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
       rethrow;
     }
+  }
+
+  Future<void> guardarProdutoPesquisado(String productId) async {
+    await _productRepository.guardarProdutoPesquisado(
+      productId: productId,
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+    );
+  }
+
+  Future<Result<List<ProductModel>>> _loadResearchedProducts() async {
+    final result = await _productRepository.getProdutosPesquisados();
+
+    if (result.isEmpty) {
+      return Failure(throw Exception("Lista não encontrada"));
+    }
+
+    setProdutosVisualizados(result);
+
+    return Success(result);
   }
 }

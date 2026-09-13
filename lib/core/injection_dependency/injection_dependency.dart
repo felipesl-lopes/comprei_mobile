@@ -1,3 +1,4 @@
+import 'package:appshop/core/database/dataSource/product_local_data_source.dart';
 import 'package:appshop/core/services/http_client_service.dart';
 import 'package:appshop/core/services/i_http_client.dart';
 import 'package:appshop/modules/auth/providers/auth_provider.dart';
@@ -42,7 +43,10 @@ void configureDependencies() {
     () => CategoriasRepository(getIt<IHttpClient>()),
   );
   getIt.registerLazySingleton<ProductRepository>(
-    () => ProductRepository(getIt<IHttpClient>()),
+    () => ProductRepository(
+      getIt<IHttpClient>(),
+      getIt<ProductLocalDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<CartRepository>(
     () => CartRepository(getIt<IHttpClient>()),
@@ -92,5 +96,9 @@ void configureDependencies() {
 
   getIt.registerLazySingleton<EnderecoLocalDataSource>(
     () => EnderecoLocalDataSource(),
+  );
+
+  getIt.registerLazySingleton<ProductLocalDataSource>(
+    () => ProductLocalDataSource(),
   );
 }
