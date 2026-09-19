@@ -17,6 +17,8 @@ import 'package:appshop/modules/endereco/repositories/endereco_repository.dart';
 import 'package:appshop/modules/home/providers/banners_provider.dart';
 import 'package:appshop/modules/product/providers/product_provider.dart';
 import 'package:appshop/modules/product/repositories/product_repository.dart';
+import 'package:appshop/modules/profile/preferencias/providers/preferences_provider.dart';
+import 'package:appshop/modules/profile/preferencias/repositories/preferences_repository.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 
@@ -62,6 +64,9 @@ void configureDependencies() {
   getIt.registerLazySingleton<AvaliacaoRepository>(
     () => AvaliacaoRepository(getIt<IHttpClient>()),
   );
+  getIt.registerLazySingleton<PreferencesRepository>(
+    () => PreferencesRepository(getIt<IHttpClient>()),
+  );
 
   getIt.registerLazySingleton<CartProvider>(() => CartProvider(
         getIt<CartRepository>(),
@@ -92,6 +97,10 @@ void configureDependencies() {
 
   getIt.registerLazySingleton<EnderecoProvider>(() => EnderecoProvider(
         getIt<EnderecoRepository>(),
+      ));
+
+  getIt.registerLazySingleton<PreferencesProvider>(() => PreferencesProvider(
+        getIt<PreferencesRepository>(),
       ));
 
   getIt.registerLazySingleton<EnderecoLocalDataSource>(

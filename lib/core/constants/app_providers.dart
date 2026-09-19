@@ -7,6 +7,7 @@ import 'package:appshop/modules/compras/providers/order_list_provider.dart';
 import 'package:appshop/modules/endereco/providers/endereco_provider.dart';
 import 'package:appshop/modules/home/providers/banners_provider.dart';
 import 'package:appshop/modules/product/providers/product_provider.dart';
+import 'package:appshop/modules/profile/preferencias/providers/preferences_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -35,6 +36,9 @@ class AppProviders {
     ),
     ChangeNotifierProvider(
       create: (_) => getIt<AvaliacaoProvider>(),
-    )
+    ),
+    ChangeNotifierProvider(
+      create: (_) => getIt<PreferencesProvider>(),
+    ),
   ];
 }

@@ -49,6 +49,11 @@ class AppDrawer extends StatelessWidget {
             route: AppRoutes.CART,
           ),
           _DrawerMenuItem(
+            title: "Meus favoritos",
+            icon: Icons.favorite,
+            route: AppRoutes.SEARCH_PRODUCT,
+          ),
+          _DrawerMenuItem(
             title: "Minhas compras",
             icon: Icons.payment,
             route: AppRoutes.COMPRAS,
@@ -99,7 +104,7 @@ class _DrawerMenuItem extends StatelessWidget {
         ListTile(
             dense: true,
             visualDensity: VisualDensity(vertical: -2),
-            leading: Icon(icon),
+            leading: Icon(icon, color: Colors.black54),
             title: Text(title),
             onTap: () {
               Navigator.of(context).pop();

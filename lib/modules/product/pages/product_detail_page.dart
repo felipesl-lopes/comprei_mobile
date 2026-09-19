@@ -81,6 +81,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 product!.id!,
               );
         }
+
+        context.read<ProductProvider>().loadResearchedProductsCommand.execute();
       },
     );
   }

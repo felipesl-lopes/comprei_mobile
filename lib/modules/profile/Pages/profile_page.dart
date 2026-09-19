@@ -37,7 +37,7 @@ class ProfilePage extends StatelessWidget {
       (
         Icons.tune_rounded,
         "Preferências",
-        () => Navigator.of(context).pushNamed(AppRoutes.PROFILE_USER_DATA),
+        () => Navigator.of(context).pushNamed(AppRoutes.PREFERENCIAS),
       ),
       (
         Icons.info_outline_rounded,

@@ -15,6 +15,7 @@ import 'package:appshop/modules/manage_products/pages/manage_products_page.dart'
 import 'package:appshop/modules/product/pages/product_detail_page.dart';
 import 'package:appshop/modules/profile/pages/dados_usuario_page.dart';
 import 'package:appshop/modules/profile/pages/profile_page.dart';
+import 'package:appshop/modules/profile/preferencias/pages/preferencias_page.dart';
 import 'package:appshop/modules/search/pages/search_page.dart';
 import 'package:flutter/material.dart';
 
@@ -38,6 +39,7 @@ class AppRoutes {
   static const AVALIACAO_PRODUTO = '/avaliacao_produto';
   static const LISTA_AVALIACOES = '/lista_avaliacoes';
   static const GERENCIAR_ENDERECO = '/gerenciar_endereco';
+  static const PREFERENCIAS = '/preferencias';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     Widget page;
@@ -113,6 +115,10 @@ class AppRoutes {
 
       case GERENCIAR_ENDERECO:
         page = GerenciarEnderecosPage();
+        break;
+
+      case PREFERENCIAS:
+        page = PreferenciasPage();
         break;
 
       default:

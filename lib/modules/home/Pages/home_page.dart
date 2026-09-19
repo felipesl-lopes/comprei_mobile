@@ -12,6 +12,7 @@ import 'package:appshop/modules/home/widgets/card_incentivo_carrinho.dart';
 import 'package:appshop/modules/home/widgets/category_roundels.dart';
 import 'package:appshop/modules/product/providers/product_provider.dart';
 import 'package:appshop/modules/product/widgets/product_grid.dart';
+import 'package:appshop/modules/profile/preferencias/providers/preferences_provider.dart';
 import 'package:appshop/modules/search/models/search_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +46,7 @@ class _HomePageState extends State<HomePage> {
       context.read<ProductProvider>().loadMyProductsCommand.execute(),
       context.read<ProductProvider>().loadFavoritesProductsCommand.execute(),
       context.read<EnderecoProvider>().loadAddressCommand.execute(),
+      context.read<PreferencesProvider>().loadPreferencesCommand.execute(),
     ]);
   }
 
@@ -79,17 +81,21 @@ class _HomePageState extends State<HomePage> {
     final produtosProvider = context.watch<ProductProvider>();
     final bannersProvider = context.watch<BannersProvider>();
     final categoriasProvider = context.watch<CategoriasProvider>();
+    final preferencesProvider = context.watch<PreferencesProvider>();
 
     final productsValue = produtosProvider.loadProductsCommand.value;
     final bannersValue = bannersProvider.loadBannersCommand.value;
     final categoriasValue = categoriasProvider.loadCategoriesCommand.value;
+    final preferencesValue = preferencesProvider.loadPreferencesCommand.value;
 
     final isLoading = productsValue.isIdle ||
         productsValue.isRunning ||
         bannersValue.isIdle ||
         bannersValue.isRunning ||
         categoriasValue.isIdle ||
-        categoriasValue.isRunning;
+        categoriasValue.isRunning ||
+        preferencesValue.isRunning ||
+        preferencesValue.isIdle;
 
     final categorias = categoriasProvider.principaisCategorias.toList();
     final produtosEmOferta = produtosProvider.produtosEmOferta;
@@ -184,7 +190,10 @@ class _HomePageState extends State<HomePage> {
                           icon: Icons.error_outline,
                           iconColor: Theme.of(context).colorScheme.error,
                         ),
-                      if (produtosProvider.produtosFavoritos.isNotEmpty)
+                      if (produtosProvider.produtosFavoritos.isNotEmpty &&
+                          preferencesProvider
+                                  .preferences!.exibirProdutosFavoritos !=
+                              false)
                         ProductGrid(
                           list_products: produtosProvider.produtosFavoritos,
                           quantityGrid: 4,
@@ -194,9 +203,14 @@ class _HomePageState extends State<HomePage> {
                       if (produtosProvider.loadProductsCommand.value.isSuccess)
                         CardIncentivoCarrinho(),
                       if (produtosProvider
-                          .loadResearchedProductsCommand.value.isSuccess)
+                              .loadResearchedProductsCommand.value.isSuccess &&
+                          preferencesProvider
+                                  .preferences!.exibirProdutosVisualizados !=
+                              false)
                         ProductGrid(
-                          list_products: produtosProvider.produtosVisualizados,
+                          list_products: produtosProvider
+                              .produtosVisualizados.reversed
+                              .toList(),
                           quantityGrid: 5,
                           title: "Últimos vistos",
                           gridHorizontal: true,
