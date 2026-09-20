@@ -61,10 +61,6 @@ class CartProvider with ChangeNotifier {
 
   Future<Result<List<CartProductModel>>> _loadCart() async {
     try {
-      if (_productProvider.produtos.isEmpty) {
-        await _productProvider.loadProductsCommand.execute();
-      }
-
       final productsMap = {for (var p in _productProvider.produtos) p.id!: p};
 
       final data = await _cartRepository.carregarCarrinho(

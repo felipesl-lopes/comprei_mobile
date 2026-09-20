@@ -37,8 +37,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadInitialData() async {
     final productProvider = context.read<ProductProvider>();
 
+    await productProvider.loadProductsCommand.execute();
+
     await Future.wait([
-      productProvider.loadProductsCommand.execute(),
       productProvider.loadResearchedProductsCommand.execute(),
       context.read<CategoriasProvider>().loadCategoriesCommand.execute(),
       context.read<BannersProvider>().loadBannersCommand.execute(),
