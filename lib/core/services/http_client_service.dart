@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appshop/core/errors/http_exception.dart';
 import 'package:appshop/core/services/http_response.dart';
 import 'package:appshop/core/services/i_http_client.dart';
 import 'package:http/http.dart' as http;
@@ -33,19 +34,14 @@ class HttpClientService implements IHttpClient {
   }
 
   HttpResponse _handleResponse(http.Response response) {
-    final body = response.body;
-
-    final data = body.isNotEmpty ? _tryDecode(body) : null;
-
-    final httpResponse = HttpResponse(
-      data: data,
-      statusCode: response.statusCode,
-      headers: response.headers,
-      statusMessage: response.reasonPhrase,
-    );
+    final httpResponse = _parseResponse(response);
 
     if (!httpResponse.isSuccess) {
-      throw Exception('Erro HTTP: ${response.statusCode}');
+      throw AppHttpException(
+        message: _extractErrorMessage(httpResponse),
+        statusCode: httpResponse.statusCode,
+        data: httpResponse.data,
+      );
     }
 
     return httpResponse;
@@ -59,14 +55,32 @@ class HttpClientService implements IHttpClient {
     }
   }
 
-  HttpResponse _rawResponse(http.Response response) {
-    final data = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+  HttpResponse _parseResponse(http.Response response) {
+    final data = response.body.isNotEmpty ? _tryDecode(response.body) : null;
     return HttpResponse(
       data: data,
       statusCode: response.statusCode,
       headers: response.headers,
       statusMessage: response.reasonPhrase,
     );
+  }
+
+  String _extractErrorMessage(HttpResponse response) {
+    final data = response.data;
+
+    if (data is Map) {
+      final message = data['message'] ?? data['error'];
+
+      if (message is String && message.isNotEmpty) {
+        return message;
+      }
+
+      if (message is List && message.isNotEmpty) {
+        return message.join('\n');
+      }
+    }
+
+    return response.statusMessage ?? 'Erro HTTP: ${response.statusCode}';
   }
 
   @override
@@ -80,7 +94,7 @@ class HttpClientService implements IHttpClient {
       headers: _defaultHeaders(),
     );
 
-    return validateStatus ? _handleResponse(response) : _rawResponse(response);
+    return validateStatus ? _handleResponse(response) : _parseResponse(response);
   }
 
   @override
@@ -108,7 +122,7 @@ class HttpClientService implements IHttpClient {
       body: jsonEncode(body),
     );
 
-    return validateStatus ? _handleResponse(response) : _rawResponse(response);
+    return validateStatus ? _handleResponse(response) : _parseResponse(response);
   }
 
   @override
@@ -126,7 +140,7 @@ class HttpClientService implements IHttpClient {
       headers: headers,
       body: encodedBody,
     );
-    return _rawResponse(response);
+    return _parseResponse(response);
   }
 
   @override
@@ -149,6 +163,7 @@ class HttpClientService implements IHttpClient {
     final response = await http.delete(
       _buildUri(path),
       headers: _defaultHeaders(),
+      body: body != null ? jsonEncode(body) : null,
     );
 
     return _handleResponse(response);

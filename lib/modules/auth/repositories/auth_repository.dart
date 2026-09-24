@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:appshop/core/errors/auth_exception.dart';
+import 'package:appshop/core/errors/http_exception.dart';
 import 'package:appshop/core/services/i_http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,14 +25,13 @@ class AuthRepository {
         'password': password,
       });
 
-      if (response.statusCode > 400) {
-        throw Exception('');
-      }
-
       return Map<String, dynamic>.from(response.data);
+    } on AppHttpException catch (e) {
+      debugPrint(e.toString());
+      throw AuthException(message: e.message, code: e.statusCode.toString());
     } catch (e) {
       debugPrint(e.toString());
-      throw Exception(e.toString());
+      throw AuthException(message: e.toString());
     }
   }
 
@@ -50,14 +49,13 @@ class AuthRepository {
         'name': name,
       });
 
-      if (response.statusCode > 400) {
-        throw Exception('');
-      }
-
       return Map<String, dynamic>.from(response.data);
+    } on AppHttpException catch (e) {
+      debugPrint(e.toString());
+      throw AuthException(message: e.message, code: e.statusCode.toString());
     } catch (e) {
       debugPrint(e.toString());
-      throw Exception(e.toString());
+      throw AuthException(message: e.toString());
     }
   }
 
@@ -70,16 +68,10 @@ class AuthRepository {
         'refreshToken': refreshToken
       }).timeout(const Duration(seconds: 10));
 
-      final data = response.data;
-
-      final body =
-          data is String ? jsonDecode(data) : Map<String, dynamic>.from(data);
-
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw AuthException();
-      }
-
-      return body;
+      return Map<String, dynamic>.from(response.data);
+    } on AppHttpException catch (e) {
+      debugPrint(e.toString());
+      throw AuthException(message: e.message, code: e.statusCode.toString());
     } catch (e) {
       debugPrint(e.toString());
       throw AuthException();
