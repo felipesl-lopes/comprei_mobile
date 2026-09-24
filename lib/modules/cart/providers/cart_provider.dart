@@ -214,4 +214,12 @@ class CartProvider with ChangeNotifier {
   void limparCarrinho() {
     clear();
   }
+
+  @override
+  void dispose() {
+    for (var timer in _debounces.values) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
 }

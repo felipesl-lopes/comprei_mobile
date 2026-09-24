@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:appshop/core/services/auth_session_service.dart';
 import 'package:appshop/core/services/preferencies_values.dart';
 import 'package:appshop/core/services/secure_storage.dart';
 import 'package:appshop/modules/auth/models/user_model.dart';
@@ -8,8 +9,12 @@ import 'package:flutter/material.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthRepository _repository;
+  final AuthSessionService _sessionService;
 
-  AuthProvider(this._repository);
+  AuthProvider(
+    this._repository,
+    this._sessionService,
+  );
 
   String? _token;
   String? _refreshToken;
@@ -60,6 +65,10 @@ class AuthProvider with ChangeNotifier {
 
     await _storage.saveRefreshToken(_refreshToken!);
 
+    _sessionService.updateSession(
+      token: _token,
+      expiryDate: _expiryDate,
+    );
     _generateNewToken();
     notifyListeners();
   }
@@ -70,6 +79,7 @@ class AuthProvider with ChangeNotifier {
     _token = null;
     _email = null;
     _expiryDate = null;
+    _sessionService.clear();
     await _prefs.deleteKeepLogged();
     await _storage.deleteCredentials();
     await _storage.deleteRefreshToken();
@@ -111,6 +121,10 @@ class AuthProvider with ChangeNotifier {
 
       await _storage.saveRefreshToken(_refreshToken!);
 
+      _sessionService.updateSession(
+        token: _token,
+        expiryDate: _expiryDate,
+      );
       _generateNewToken();
       notifyListeners();
     } catch (e) {
@@ -118,5 +132,11 @@ class AuthProvider with ChangeNotifier {
       await deslogar();
       rethrow;
     }
+  }
+
+  @override
+  void dispose() {
+    _clearLogoutTimer();
+    super.dispose();
   }
 }
