@@ -107,6 +107,7 @@ class _DrawerMenuItem extends StatelessWidget {
             leading: Icon(icon, color: Colors.black54),
             title: Text(title),
             onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
               Navigator.of(context).pop();
               Navigator.of(context).pushNamed(route);
             }),
