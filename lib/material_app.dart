@@ -1,4 +1,5 @@
 import 'package:appshop/core/constants/app_colors.dart';
+import 'package:appshop/core/constants/app_route_observer.dart';
 import 'package:appshop/core/constants/app_routes.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,7 @@ class MaterialAppWidget extends StatelessWidget {
         fontFamily: "Lato",
       ),
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [routeObserver],
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }

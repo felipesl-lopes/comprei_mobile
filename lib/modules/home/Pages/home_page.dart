@@ -3,6 +3,7 @@ import 'package:appshop/core/widgets/app_drawer.dart';
 import 'package:appshop/core/widgets/badgee.dart';
 import 'package:appshop/core/widgets/drawer_app_bar.dart';
 import 'package:appshop/core/widgets/feedback_message.dart';
+import 'package:appshop/core/constants/app_route_observer.dart';
 import 'package:appshop/modules/cart/providers/cart_provider.dart';
 import 'package:appshop/modules/categorias/providers/categorias_provider.dart';
 import 'package:appshop/modules/endereco/providers/endereco_provider.dart';
@@ -22,7 +23,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with RouteAware {
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -53,8 +54,31 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _unfocus() => FocusManager.instance.primaryFocus?.unfocus();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPushNext() {
+    _unfocus();
+  }
+
+  @override
+  void didPopNext() {
+    _unfocus();
   }
 
   void _searchProduct() {
@@ -62,6 +86,7 @@ class _HomePageState extends State<HomePage> {
 
     if (query.isEmpty) return;
 
+    _unfocus();
     _searchController.clear();
 
     Navigator.of(context).pushNamed(
@@ -71,6 +96,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _searchProductCategory(String categoryId) {
+    _unfocus();
+
     Navigator.of(context).pushNamed(
       AppRoutes.SEARCH_PRODUCT,
       arguments: SearchPageArgs(categoryId: categoryId),
@@ -106,7 +133,8 @@ class _HomePageState extends State<HomePage> {
         titleWidget: TextField(
           controller: _searchController,
           autofocus: false,
-          onSubmitted: (_) => FocusScope.of(context).unfocus(),
+          onSubmitted: (_) => _unfocus(),
+          onTapOutside: (_) => _unfocus(),
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
             isDense: true,
@@ -147,6 +175,7 @@ class _HomePageState extends State<HomePage> {
           Consumer<CartProvider>(
             child: IconButton(
               onPressed: () {
+                _unfocus();
                 Navigator.of(context).pushNamed(AppRoutes.CART);
               },
               icon: Icon(
@@ -170,77 +199,82 @@ class _HomePageState extends State<HomePage> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : Container(
-                color: Theme.of(context).colorScheme.background,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      BannerCarousel(
-                        bannerList: bannersProvider.items,
-                      ),
-                      SizedBox(height: 12),
-                      CategoryRoundels(
-                        categorias: categorias,
-                        onCategorySelected: _searchProductCategory,
-                      ),
-                      if (produtosProvider
-                          .loadFavoritesProductsCommand.value.isFailure)
-                        FeedbackMessage(
-                          message:
-                              "Não foi possível carregar seus produtos favoritos.",
-                          icon: Icons.error_outline,
-                          iconColor: Theme.of(context).colorScheme.error,
+            : RefreshIndicator(
+                onRefresh: _loadInitialData,
+                child: Container(
+                  color: Theme.of(context).colorScheme.background,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        BannerCarousel(
+                          bannerList: bannersProvider.items,
                         ),
-                      if (produtosProvider.produtosFavoritos.isNotEmpty &&
-                          preferencesProvider
-                                  .preferences!.exibirProdutosFavoritos !=
-                              false)
-                        ProductGrid(
-                          list_products: produtosProvider.produtosFavoritos,
-                          quantityGrid: 4,
-                          title: "Seus favoritos",
-                          gridHorizontal: true,
+                        SizedBox(height: 12),
+                        CategoryRoundels(
+                          categorias: categorias,
+                          onCategorySelected: _searchProductCategory,
                         ),
-                      if (produtosProvider.loadProductsCommand.value.isSuccess)
-                        CardIncentivoCarrinho(),
-                      if (produtosProvider
-                              .loadResearchedProductsCommand.value.isSuccess &&
-                          preferencesProvider
-                                  .preferences!.exibirProdutosVisualizados !=
-                              false)
-                        ProductGrid(
-                          list_products: produtosProvider
-                              .produtosVisualizados.reversed
-                              .toList(),
-                          quantityGrid: 5,
-                          title: "Últimos vistos",
-                          gridHorizontal: true,
-                        ),
-                      if (produtosProvider.loadProductsCommand.value.isFailure)
-                        FeedbackMessage(
-                          message: "Não foi possível carregar os produtos.",
-                          icon: Icons.error_outline,
-                          iconColor: Theme.of(context).colorScheme.error,
-                        )
-                      else if (produtosProvider.produtos.isEmpty)
-                        FeedbackMessage(
-                          message: "Nenhum produto encontrado.",
-                          icon: Icons.inventory_2_outlined,
-                        )
-                      else
-                        ProductGrid(
-                          list_products: produtosProvider.produtos,
-                          quantityGrid: 6,
-                          title: "Produtos para você",
-                        ),
-                      SizedBox(height: 16),
-                      if (produtosEmOferta.isNotEmpty)
-                        ProductGrid(
-                          list_products: produtosEmOferta,
-                          quantityGrid: 6,
-                          title: "Produtos em oferta",
-                        ),
-                    ],
+                        if (produtosProvider
+                            .loadFavoritesProductsCommand.value.isFailure)
+                          FeedbackMessage(
+                            message:
+                                "Não foi possível carregar seus produtos favoritos.",
+                            icon: Icons.error_outline,
+                            iconColor: Theme.of(context).colorScheme.error,
+                          ),
+                        if (produtosProvider.produtosFavoritos.isNotEmpty &&
+                            preferencesProvider
+                                    .preferences!.exibirProdutosFavoritos !=
+                                false)
+                          ProductGrid(
+                            list_products: produtosProvider.produtosFavoritos,
+                            quantityGrid: 4,
+                            title: "Seus favoritos",
+                            gridHorizontal: true,
+                          ),
+                        if (produtosProvider
+                            .loadProductsCommand.value.isSuccess)
+                          CardIncentivoCarrinho(),
+                        if (produtosProvider.loadResearchedProductsCommand.value
+                                .isSuccess &&
+                            preferencesProvider
+                                    .preferences!.exibirProdutosVisualizados !=
+                                false)
+                          ProductGrid(
+                            list_products: produtosProvider
+                                .produtosVisualizados.reversed
+                                .toList(),
+                            quantityGrid: 5,
+                            title: "Últimos vistos",
+                            gridHorizontal: true,
+                          ),
+                        if (produtosProvider
+                            .loadProductsCommand.value.isFailure)
+                          FeedbackMessage(
+                            message: "Não foi possível carregar os produtos.",
+                            icon: Icons.error_outline,
+                            iconColor: Theme.of(context).colorScheme.error,
+                          )
+                        else if (produtosProvider.produtos.isEmpty)
+                          FeedbackMessage(
+                            message: "Nenhum produto encontrado.",
+                            icon: Icons.inventory_2_outlined,
+                          )
+                        else
+                          ProductGrid(
+                            list_products: produtosProvider.produtos,
+                            quantityGrid: 6,
+                            title: "Produtos para você",
+                          ),
+                        SizedBox(height: 16),
+                        if (produtosEmOferta.isNotEmpty)
+                          ProductGrid(
+                            list_products: produtosEmOferta,
+                            quantityGrid: 6,
+                            title: "Produtos em oferta",
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
