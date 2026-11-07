@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:appshop/modules/compras/models/orderStatus.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:appshop/modules/compras/models/compras_model.dart';
@@ -12,11 +13,13 @@ class Order {
   final List<ComprasModel> products;
   final DateTime date;
   final EnderecoModel? endereco;
+  final OrderStatus? orderStatus;
   Order({
     required this.id,
     required this.total,
     required this.products,
     required this.date,
+    this.orderStatus,
     this.endereco,
   });
 
@@ -48,17 +51,18 @@ class Order {
 
   factory Order.fromMap(Map<String, dynamic> map) {
     return Order(
-      id: map['id'] as String,
-      total: (map["total"] as num).toDouble(),
-      products: (map["products"] as List)
-          .map((item) => ComprasModel.fromMap(
-                Map<String, dynamic>.from(item),
-              ))
-          .toList(),
-      date: DateTime.parse(map["date"]),
-      endereco:
-          map['address'] != null ? EnderecoModel.fromMap(map['address']) : null,
-    );
+        id: map['id'] as String,
+        total: (map["total"] as num).toDouble(),
+        products: (map["products"] as List)
+            .map((item) => ComprasModel.fromMap(
+                  Map<String, dynamic>.from(item),
+                ))
+            .toList(),
+        date: DateTime.parse(map["date"]),
+        endereco: map['address'] != null
+            ? EnderecoModel.fromMap(map['address'])
+            : null,
+        orderStatus: OrderStatus.values.byName(map['status'] ?? 'pending'));
   }
 
   String toJson() => json.encode(toMap());
